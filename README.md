@@ -22,15 +22,29 @@ With `Strings`:
 @tool
 extends Node
 
-func _get_tool_buttons(): return ["boost_score", "remove_player"]
+func _get_tool_buttons():
+	return ["boost_score", "remove_player"]
 
 func boost_score():
-  Player.score += 100
+	Player.score += 100
 
 func remove_player():
-  Player.queue_free()
+	Player.queue_free()
 ```
-And/or `Dictionarys`
+and/or `Lambdas`
+
+```
+# WARNING, some stuff won't work: If you get *"Cannot access member without instance"*: https://github.com/godotengine/godot/issues/56780
+@tool
+extends Node
+
+func _get_tool_buttons():
+	return [
+		func add_score(): score += 10,
+		func reset_health(): health = 0
+	]
+```
+and/or `Dictionarys`
 ```
 @tool
 extends Node
@@ -40,7 +54,13 @@ signal reset()
 func _get_tool_buttons(): return [
 	"boost_score",
 	{call="boost_score", args=[100], tint=Color.DEEP_SKY_BLUE},
-	{call="emit_signal", args=["reset"], text="Reset", tint=Color.TOMATO}
+	{call="emit_signal", args=["reset"], text="Reset", tint=Color.TOMATO},
+	{
+		call=func(): print("My Health: ", health),
+		text="Print Health",
+		tint=func(): return Color(health * .1, 0.0, 0.0)
+		lock=func(): return health == 100
+	}
 ]
 
 func boost_score(x=10):
@@ -90,4 +110,5 @@ func my_button():
 - Added lambda support `call` `text` `icon` `tint` `lock`: `{ text="Lambda", call=func(): print("From lambda with love") }`
 - Changed `disabled` to `lock`
 - Bottom buttons are alphabetically sorted.
-(If you get *"Cannot access member without instance"*: https://github.com/godotengine/godot/issues/56780)
+
+
