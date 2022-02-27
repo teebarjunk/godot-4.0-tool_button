@@ -1,5 +1,5 @@
 
-## ToolButtonPlugin for Godot 4.0 - v1.0
+## ToolButtonPlugin for Godot 4.0 - v1.1
 
 Editor buttons with one line of code: `@tool`.
 
@@ -38,13 +38,13 @@ extends Node
 signal reset()
 
 func _get_tool_buttons(): return [
-    "boost_score",
-    {call="boost_score", args=[100], tint=Color.DEEP_SKY_BLUE},
-    {call="emit_signal", args=["reset"], text="Reset", tint=Color.TOMATO}
+	"boost_score",
+	{call="boost_score", args=[100], tint=Color.DEEP_SKY_BLUE},
+	{call="emit_signal", args=["reset"], text="Reset", tint=Color.TOMATO}
 ]
 
 func boost_score(x=10):
-    Player.score += x
+	Player.score += x
 ```
 
 `call` is mandatory. Other's are optional.
@@ -59,8 +59,8 @@ func boost_score(x=10):
 |flat   | Button is flat style.         | false |
 |hint   | Hint text for mouse over.     | - |
 |print  | Print output of method call?  | true |
-|align  | Button alignment.             | Button.ALIGN_CENTER |
-|disable| Disable button?               | false |
+|align  | Button alignment.             | BoxContainer.ALIGNMENT_CENTER |
+|lock   | Disable button?               | false |
 |update_filesystem| Tells Godot editor to rescan file system. | false |
 
 
@@ -75,11 +75,19 @@ class_name MyResource
 
 # STATIC
 static func _get_tool_buttons():
-    return ["my_button"]
+	return ["my_button"]
 
 # LOCAL
 export(String) var my_name:String = ""
 
 func my_button():
-    print(my_name)
+	print(my_name)
 ```
+
+# Changes
+## 1.1
+- Updated for Godot `4.0.alpha2`
+- Added lambda support `call` `text` `icon` `tint` `lock`: `{ text="Lambda", call=func(): print("From lambda with love") }`
+- Changed `disabled` to `lock`
+- Bottom buttons are alphabetically sorted.
+(If you get *"Cannot access member without instance"*: https://github.com/godotengine/godot/issues/56780)
