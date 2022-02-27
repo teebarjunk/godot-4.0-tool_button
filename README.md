@@ -18,7 +18,7 @@ To specify buttons that show above the inspector, add a `_get_tool_buttons` func
 ![ReadMe](readme/preview2.png "Preview")
 
 With `Strings`:
-```
+```gd
 @tool
 extends Node
 
@@ -33,7 +33,7 @@ func remove_player():
 ```
 and/or `Lambdas`
 
-```
+```gd
 # WARNING, some stuff won't work: If you get *"Cannot access member without instance"*: https://github.com/godotengine/godot/issues/56780
 @tool
 extends Node
@@ -45,7 +45,7 @@ func _get_tool_buttons():
 	]
 ```
 and/or `Dictionarys`
-```
+```gd
 @tool
 extends Node
 
