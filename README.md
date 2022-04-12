@@ -1,5 +1,5 @@
 
-## ToolButtonPlugin for Godot 4.0 - v1.1
+## ToolButtonPlugin for Godot 4.0 - v1.3
 
 Editor buttons with one line of code: `@tool`.
 
@@ -23,7 +23,7 @@ With `Strings`:
 extends Node
 
 func _get_tool_buttons():
-	return ["boost_score", "remove_player"]
+	return [boost_score, remove_player]
 
 func boost_score():
 	Player.score += 100
@@ -31,7 +31,7 @@ func boost_score():
 func remove_player():
 	Player.queue_free()
 ```
-and/or `Lambdas`
+and/or `Callable`s
 
 ```gd
 # WARNING, some stuff won't work: If you get *"Cannot access member without instance"*: https://github.com/godotengine/godot/issues/56780
@@ -104,10 +104,52 @@ func my_button():
 	print(my_name)
 ```
 
+## Signals
+```gd
+signal my_signal()
+signal my_arg_signal(x, y)
+
+func _get_tool_buttons():
+	return [
+		my_signal,
+		[my_arg_signal, [true, "okay"]]
+	]
+```
+
+## Multi button support
+You can have multiple buttons on the same line.<br>
+They can all be called at once (default), or seperate, based on a toggle.
+```
+func _get_tool_buttons():
+	return [
+		[msg, msg.bind("yes"), msg.bind("no")],
+	]
+
+func msg(msg := "Default Message"):
+	print("Got: ", msg)
+
+func doit():
+	pass
+``` 
+
 # Changes
+## 1.4
+- Added Signal support.
+- Added support for multiple buttons in the same row.
+- Added automatically generated buttons for testing public methods.
+- Added automatically generated buttons for testing argumentless signals.
+- Auto tint method buttons blue and signal buttons yellow.
+- Lot's of little fixes.
+
+## 1.3
+- Added `@SELECT_AND_EDIT::file_path`, `@EDIT_RESOURCE::file_path`, `@SELECT_FILE::file_path`.
+
+## 1.2
+- Added 'Print Meta' button, which will print all meta data in an object.
+
 ## 1.1
 - Updated for Godot `4.0.alpha2`
-- Added lambda support `call` `text` `icon` `tint` `lock`: `{ text="Lambda", call=func(): print("From lambda with love") }`
+- Added `Callable` support `call` `text` `icon` `tint` `lock`: `{ text="Callable", call=func(): print("From Callable with love") }`
 - Changed `disabled` to `lock`
 - Bottom buttons are alphabetically sorted.
 
