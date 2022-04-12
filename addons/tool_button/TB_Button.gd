@@ -53,7 +53,7 @@ func _init(obj: Object, d, p):
 	# add a check box if there are multiple buttons
 	if len(all_info) > 1:
 		check = CheckBox.new()
-		check.button_pressed = _get_tool_button_state().get(hash_id, true)
+		check.button_pressed = _get_tool_button_state().get(hash_id, false)
 		check.hint_tooltip = "All at once"
 		check.pressed.connect(_check_pressed)
 		add_child(check)
@@ -77,7 +77,7 @@ func _get_info(d: Variant) -> Variant:
 	elif d is Callable:
 		if d.is_custom():
 			out.call = d
-			out.text = str(d).replace("(lambda)", "")
+			out.text = str(d).replace("(lambda)", "").capitalize()
 			
 		else:
 			out.call = d
@@ -112,12 +112,16 @@ func _get_info(d: Variant) -> Variant:
 			out.text = str(out.call)
 		
 	else:
-		print("Hmm?", d)
+		print("Hmm 0?", d)
 	
 	_process_info(out)
 	return out
 
 func _process_info(out: Dictionary):
+	if not "call" in out:
+		var s = str(out)
+		out.call = func(): print("No call defined for %s." % s)
+	
 	# special tags of extra actions
 	var parts := Array(_get_label(out).split(";"))
 	if out.call is String:
@@ -274,10 +278,10 @@ func _call(x: Variant) -> Variant:
 				return "%s: %s (signal)" % [err_name, x]
 			
 			else:
-				push_error("Hmm?")
+				push_error("Hmm 1?")
 				return null
 	else:
-		push_error("Hmm?")
+		push_error("Hmm 2?")
 		return null
 
 func _edit(file: String):
@@ -292,7 +296,8 @@ func _on_button_pressed(index: int):
 			got.append(_call(info))
 	else:
 		got = _call(all_info[index])
-	print("[tool_button]: ", got)
+	if got != null:
+		print("[tool_button]: ", got)
 
 static func get_error_name(error: int) -> String:
 	match error:

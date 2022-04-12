@@ -5,6 +5,17 @@ var pluginref
 var default_node_signals := []
 var default_resource_signals := []
 
+const ALLOW_NODE_METHODS := [
+	"get_class", "get_path", "raise", "get_groups",
+	"get_owner", "get_process_priority", "get_scene_file_path"
+]
+const ALLOW_RESOURCE_METHODS := [
+	"get_class", "get_path"
+]
+const BLOCK_RESOURCE_SIGNALS := [
+	"setup_local_to_scene_requested"
+]
+
 func _init(p):
 	pluginref = p
 	default_node_signals = Node.new().get_signal_list()\
@@ -60,15 +71,47 @@ func _parse_category(object: Object, category: String) -> void:
 			call=method.name,
 		}, pluginref))
 	
-	var signals = object.get_signal_list().filter(func(s): return len(s.args) == 0)
 	if category == "Node":
-		signals = signals.filter(func(s): return not s.name in default_node_signals)
+		for method in ALLOW_NODE_METHODS:
+			add_custom_control(InspectorToolButton.new(object, {
+				tint=Color.PALE_TURQUOISE.lerp(Color.DARK_GRAY, .5),
+				call=method,
+			}, pluginref))
 	elif category == "Resource":
-		signals = signals.filter(func(s): return not s.name in default_resource_signals)
+		for method in ALLOW_RESOURCE_METHODS:
+			add_custom_control(InspectorToolButton.new(object, {
+				tint=Color.PALE_TURQUOISE.lerp(Color.DARK_GRAY, .5),
+				call=method,
+			}, pluginref))
 	
-	signals.sort_custom(func(a, b): return a.name < b.name)
+	var parent_signals = ClassDB.class_get_signal_list(ClassDB.get_parent_class(object.get_class()))\
+		.filter(func(s): return len(s.args) == 0)\
+		.map(func(x): return x.name)
+	parent_signals.sort_custom(func(a, b): return a < b)
+	
+	var signals = object.get_signal_list()\
+		.filter(func(s): return len(s.args) == 0 and not s.name in parent_signals)\
+		.map(func(x): return x.name)
+	if category == "Node":
+		signals = signals.filter(func(x): return not x in default_node_signals)
+	elif category == "Resource":
+		signals = signals.filter(func(x): return not x in default_resource_signals)
+	
+	signals.sort_custom(func(a, b): return a < b)
+	
 	for sig in signals:
 		add_custom_control(InspectorToolButton.new(object, {
 			tint=Color.PALE_GOLDENROD,
-			call=sig.name
+			call=sig
+		}, pluginref))
+	
+	if category == "Node":
+		parent_signals = parent_signals.filter(func(x): return not x in default_node_signals)
+	elif category == "Resource":
+		parent_signals = parent_signals.filter(func(x): return not x in default_resource_signals)
+	
+	for sig in parent_signals:
+		add_custom_control(InspectorToolButton.new(object, {
+			tint=Color.PALE_GOLDENROD.lerp(Color.DARK_GRAY, .5),
+			call=sig
 		}, pluginref))

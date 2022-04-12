@@ -1,16 +1,38 @@
 
 ## ToolButtonPlugin for Godot 4.0 - v1.3
 
-Editor buttons with one line of code: `@tool`.
+Editor buttons with ~~one line of code: `@tool`~~ zero lines of code.
 
-![ReadMe](readme/preview1.png "Preview")
+Simply install, and select any node:
+
+- Public methods will be listed at the bottom of editor panel.
+- Signals with 0 arguments will also be shown.
+
+For more advanced features, read below.
+
+![ReadMe](readme/bottom_buttons.png "Preview")
 
 ## Getting Started
 
 - Enable plugin.
 - Add `@tool` to top of your script.
 - Buttons will be at the bottom of the inspector.
+- Add a `_get_tool_buttons() -> Array` method.
+- The array items can be:
+	- Names of methods `"my_method"`
+	- Names of signals `"my_signal"`
+	- Arrays of names `["my_method", "method2", "a_signal"]`
+	- Callables `my_method`
+	- Bound Callables `method.bind(true, "ok" 1.0)`
+	- Inline Callable `func(): print("Hey!")`
+	- Inline Callable with name `func press_me(): print("You pressed me!")`
+	- Arrays of callables `[method1, method2.bind("yes"), method2.bind("no")]`
+	- Array with signal and arguments `["my_signal", [true, "ok"]]`
+	- Arrays of strings and callables and signales and... `["method1", method2, "signal"]`
+	- Dictionarys with fine tuned control: `{call=method.bind(true), text="My Method", tint=Color.RED}`
 
+![](readme/preview3.png)
+	
 ## Advanced Example
 
 To specify buttons that show above the inspector, add a `_get_tool_buttons` func.
