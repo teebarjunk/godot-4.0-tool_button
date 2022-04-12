@@ -77,7 +77,16 @@ func _get_info(d: Variant) -> Variant:
 	elif d is Callable:
 		if d.is_custom():
 			out.call = d
-			out.text = str(d).replace("(lambda)", "").capitalize()
+			out.text = str(d)
+			if "::" in out.text:
+				out.text = out.text.split("::")[-1]
+			if "(lambda)" in out.text:
+				out.text = out.text.replace("(lambda)", "")
+			
+			if d.get_object() != null and d.get_object().has_method(out.text):
+				out.tint = TINT_METHOD
+			
+			out.text = out.text.capitalize()
 			
 		else:
 			out.call = d
