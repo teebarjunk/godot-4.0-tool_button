@@ -15,5 +15,6 @@ default_env.tres
 icon.png
 icon.png.import
 Test.gd
+ParentClass.gd
 Test.tscn
 project.godot
