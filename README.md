@@ -16,20 +16,18 @@ For more advanced features, read below.
 
 - Enable plugin.
 - Add `@tool` to top of your script.
-- Buttons will be at the bottom of the inspector.
 - Add a `_get_tool_buttons() -> Array` method.
 - The array items can be:
 	- Names of methods `"my_method"`
+	- Method itself `my_method`
+	- Bound method `method.bind(true, "ok" 1.0)`
+	- Anonymous methods `func(): print("Hey!")`
+	- Anonymous methods with name `func press_me(): print("You pressed me!")`
 	- Names of signals `"my_signal"`
-	- Arrays of names `["my_method", "method2", "a_signal"]`
-	- Callables `my_method`
-	- Bound Callables `method.bind(true, "ok" 1.0)`
-	- Inline Callable `func(): print("Hey!")`
-	- Inline Callable with name `func press_me(): print("You pressed me!")`
-	- Arrays of callables `[method1, method2.bind("yes"), method2.bind("no")]`
+	- Signal itself `my_signal`
 	- Array with signal and arguments `["my_signal", [true, "ok"]]`
-	- Arrays of strings and callables and signales and... `["method1", method2, "signal"]`
 	- Dictionarys with fine tuned control: `{call=method.bind(true), text="My Method", tint=Color.RED}`
+	- Arrays with any of the above `["my_method", method2.bind(1.0), "a_signal", {text="X", call=reset}]`
 
 ![](readme/preview3.png)
 	
