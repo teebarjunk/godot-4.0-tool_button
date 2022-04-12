@@ -1,5 +1,5 @@
 
-## ToolButtonPlugin for Godot 4.0 - v1.3
+## ToolButtonPlugin for Godot 4.0 - v1.4
 
 Editor buttons with ~~one line of code: `@tool`~~ zero lines of code.
 
