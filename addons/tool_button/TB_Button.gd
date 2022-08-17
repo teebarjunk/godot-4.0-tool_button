@@ -19,37 +19,37 @@ func _init(obj: Object, d, p):
 	object = obj
 	pluginref = p
 	hash_id = hash(d)
-	
+
 	alignment = BoxContainer.ALIGNMENT_CENTER
 	size_flags_horizontal = SIZE_EXPAND_FILL
-	
+
 	var got = _get_info(d)
 	all_info = [got] if got is Dictionary else got
-	
+
 	for index in len(all_info):
 		var info: Dictionary = all_info[index]
-		
+
 		var button := Button.new()
 		add_child(button)
 		button.size_flags_horizontal = SIZE_EXPAND_FILL
 		button.text = info.text
 		button.modulate = _get_key_or_call(info, "tint", TYPE_COLOR, Color.WHITE)
 		button.disabled = _get_key_or_call(info, "lock", TYPE_BOOL, false)
-		
+
 		button.button_down.connect(self._on_button_pressed.bind(index))
-		
+
 		if "hint" in info:
 			button.hint_tooltip = _get_key_or_call(info, "hint", TYPE_STRING, "")
 		else:
 			button.hint_tooltip = "%s(%s)" % [info.call, _get_args_string(info)]
-		
+
 		button.flat = info.get("flat", false)
-		button.alignment = info.get("align", BoxContainer.ALIGNMENT_CENTER)
-		
+		button.alignment = info.get("align", HORIZONTAL_ALIGNMENT_CENTER)
+
 		if "icon" in info:
 			button.expand_icon = false
 			button.set_button_icon(load(_get_key_or_call(info, "icon", TYPE_STRING, "")))
-	
+
 	# add a check box if there are multiple buttons
 	if len(all_info) > 1:
 		check = CheckBox.new()
@@ -69,11 +69,11 @@ func _check_pressed():
 
 func _get_info(d: Variant) -> Variant:
 	var out := {}
-	
+
 	if d is String:
 		out.call = d
 		out.text = d
-	
+
 	elif d is Callable:
 		if d.is_custom():
 			out.call = d
@@ -82,23 +82,23 @@ func _get_info(d: Variant) -> Variant:
 				out.text = out.text.split("::")[-1]
 			if "(lambda)" in out.text:
 				out.text = out.text.replace("(lambda)", "")
-			
+
 			if d.get_object() != null and d.get_object().has_method(out.text):
 				out.tint = TINT_METHOD
-			
+
 			out.text = out.text.capitalize()
-			
+
 		else:
 			out.call = d
 			out.text = str(d.get_method()).capitalize()
 			out.tint = TINT_METHOD
-	
+
 	elif d is Signal:
 		out.call = _do_signal.bind([d, []])
 		out.text = str(d.get_name()).capitalize()
 		out.tint = TINT_SIGNAL
 		out.hint = str(d)
-	
+
 	elif d is Array:
 		if d[0] is Signal:
 			var sig: Signal = d[0]
@@ -107,22 +107,22 @@ func _get_info(d: Variant) -> Variant:
 			out.text="%s\n%s" % [str(sig.get_name()).capitalize(), args]
 			out.tint=TINT_SIGNAL
 			out.hint=str(sig)
-		
+
 		else:
 			var out_list := []
 			for item in d:
 				out_list.append(_get_info(item))
 			return out_list
-	
+
 	elif d is Dictionary:
 		out = d
-		
+
 		if not "text" in out:
 			out.text = str(out.call)
-		
+
 	else:
 		print("Hmm 0?", d)
-	
+
 	_process_info(out)
 	return out
 
@@ -130,7 +130,7 @@ func _process_info(out: Dictionary):
 	if not "call" in out:
 		var s = str(out)
 		out.call = func(): print("No call defined for %s." % s)
-	
+
 	# special tags of extra actions
 	var parts := Array(_get_label(out).split(";"))
 	if out.call is String:
@@ -138,19 +138,19 @@ func _process_info(out: Dictionary):
 		out.text = parts.pop_front().capitalize()
 	else:
 		out.text = parts.pop_front()
-	
+
 	# was just a string passed?
 	if out.call is String:
 		# was it a method?
 		if object.has_method(out.call):
 			if not "tint" in out:
 				out.tint = TINT_METHOD
-		
+
 		# was it a signal?
 		elif object.has_signal(out.call):
 			if not "tint" in out:
 				out.tint = TINT_SIGNAL
-	
+
 	for i in len(parts):
 		if parts[i].begins_with("!"):
 			var tag: String = parts[i].substr(1)
@@ -158,7 +158,7 @@ func _process_info(out: Dictionary):
 			var clr_index := clr.find_named_color(tag)
 			if clr_index != -1:
 				out.tint = clr.get_named_color(clr_index)
-	
+
 	return out
 
 func _do_signal(sig_args: Array):
@@ -219,20 +219,20 @@ func _get_args_string(info: Dictionary):
 func _call(x: Variant) -> Variant:
 	if x is Dictionary:
 		return _call(x.call)
-	
+
 	elif x is Callable:
 #		prints(x.get_object(), x.get_object_id(), x.is_custom(), x.is_null(), x.is_standard(), x.is_valid())
 		var got = x.call()
 #		if x.is_custom():
 #			return get_error_name(got)
 		return got
-	
+
 	elif x is Array:
 		var out := []
 		for item in x:
 			out.append(_call(item))
 		return out
-	
+
 	elif x is String:
 		# special internal editor actions.
 		if x.begins_with("@"):
@@ -240,7 +240,7 @@ func _call(x: Variant) -> Variant:
 			match p[0]:
 				"SCAN":
 					pluginref.get_editor_interface().get_resource_filesystem().scan()
-				
+
 				"CREATE_AND_EDIT":
 					var f := File.new()
 					f.open(p[1], File.WRITE)
@@ -250,42 +250,42 @@ func _call(x: Variant) -> Variant:
 					rf.update_file(p[1])
 					rf.scan()
 					rf.scan_sources()
-					
+
 					pluginref.get_editor_interface().select_file(p[1])
 					pluginref.get_editor_interface().edit_resource.call_deferred(load(p[1]))
-					
+
 				"SELECT_AND_EDIT":
 					if File.new().file_exists(p[1]):
 						pluginref.get_editor_interface().select_file(p[1])
 						pluginref.get_editor_interface().edit_resource.call_deferred(load(p[1]))
 					else:
 						push_error("Nothing to select and edit at %s." % p[1])
-				
+
 				"SELECT_FILE":
 					if File.new().file_exists(p[1]):
 						pluginref.get_editor_interface().select_file(p[1])
 					else:
 						push_error("No file to select at %s." % p[1])
-				
+
 				"EDIT_RESOURCE":
 					if File.new().file_exists(p[1]):
 						pluginref.get_editor_interface().edit_resource.call_deferred(load(p[1]))
 					else:
 						push_error("No resource to edit at %s." % p[1])
-			
+
 			return null
-		
+
 		else:
 			# as method
 			if object.has_method(x):
 				return object.call(x)
-			
+
 			# as signal
 			elif object.has_signal(x):
 				var error := object.emit_signal(x)
 				var err_name := get_error_name(error)
 				return "%s: %s (signal)" % [err_name, x]
-			
+
 			else:
 				push_error("Hmm 1?")
 				return null
