@@ -67,7 +67,6 @@ func _parse_category(object: Object, category: String) -> void:
 
 	var methods := object.get_method_list().filter(
 		func(m: Dictionary):
-			prints("A", m.flags)
 			if m in inherited_method_list:
 				return false
 			if m.name[0] == "@":
