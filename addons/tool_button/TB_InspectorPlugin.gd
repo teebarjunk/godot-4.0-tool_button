@@ -36,24 +36,35 @@ func _parse_begin(object: Object) -> void:
 			methods = object.get_script()._get_tool_buttons()
 		else:
 			methods = object._get_tool_buttons()
-		
+
 		if methods:
 			for method in methods:
 				add_custom_control(InspectorToolButton.new(object, method, pluginref))
 
+var object_category_cache = []
 func _parse_category(object: Object, category: String) -> void:
-	if not category in ["Node", "Resource"]:
+	var allowed_categories = ["Node", "Resource"]
+#	var obj_script = object.get_script()
+#	if obj_script:
+#		var has_exports = "@export" in obj_script.source_code
+#		var attached_script_category = ""
+#		if has_exports:
+#			attached_script_category = obj_script.resource_path.get_file()
+#			object_category_cache.append(attached_script_category)
+#			allowed_categories.append(attached_script_category)
+
+	if not category in allowed_categories:
 		return
-	
+
 	var flags := {}
 	if object.has_method("_get_tool_button_flags"):
 		flags = object._get_tool_button_flags()
-	
+
 	var methods := object.get_method_list().filter(
 		func(m: Dictionary):
-			if m.flags & METHOD_FLAG_FROM_SCRIPT == 0:
+			if m.flags & m.flags != METHOD_FLAG_NORMAL:
 				return false
-			if m.name[0] == "@":
+			if m.name[0] in ["@", "set_"]:
 				return false
 			if not flags.get("private", false) and m.name[0] in "_":
 				return false
@@ -70,7 +81,7 @@ func _parse_category(object: Object, category: String) -> void:
 			tint=Color.PALE_TURQUOISE,
 			call=method.name,
 		}, pluginref))
-	
+
 	if category == "Node":
 		for method in ALLOW_NODE_METHODS:
 			add_custom_control(InspectorToolButton.new(object, {
@@ -83,12 +94,12 @@ func _parse_category(object: Object, category: String) -> void:
 				tint=Color.PALE_TURQUOISE.lerp(Color.DARK_GRAY, .5),
 				call=method,
 			}, pluginref))
-	
+
 	var parent_signals = ClassDB.class_get_signal_list(ClassDB.get_parent_class(object.get_class()))\
 		.filter(func(s): return len(s.args) == 0)\
 		.map(func(x): return x.name)
 	parent_signals.sort_custom(func(a, b): return a < b)
-	
+
 	var signals = object.get_signal_list()\
 		.filter(func(s): return len(s.args) == 0 and not s.name in parent_signals)\
 		.map(func(x): return x.name)
@@ -96,20 +107,20 @@ func _parse_category(object: Object, category: String) -> void:
 		signals = signals.filter(func(x): return not x in default_node_signals)
 	elif category == "Resource":
 		signals = signals.filter(func(x): return not x in default_resource_signals)
-	
+
 	signals.sort_custom(func(a, b): return a < b)
-	
+
 	for sig in signals:
 		add_custom_control(InspectorToolButton.new(object, {
 			tint=Color.PALE_GOLDENROD,
 			call=sig
 		}, pluginref))
-	
+
 	if category == "Node":
 		parent_signals = parent_signals.filter(func(x): return not x in default_node_signals)
 	elif category == "Resource":
 		parent_signals = parent_signals.filter(func(x): return not x in default_resource_signals)
-	
+
 	for sig in parent_signals:
 		add_custom_control(InspectorToolButton.new(object, {
 			tint=Color.PALE_GOLDENROD.lerp(Color.DARK_GRAY, .5),
