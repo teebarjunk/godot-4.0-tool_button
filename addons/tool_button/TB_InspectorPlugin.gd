@@ -16,6 +16,7 @@ const BLOCK_RESOURCE_SIGNALS := [
 	"setup_local_to_scene_requested"
 ]
 
+var inherited_method_list = []
 func _init(p):
 	pluginref = p
 	default_node_signals = Node.new().get_signal_list()\
@@ -24,6 +25,10 @@ func _init(p):
 	default_resource_signals = Resource.new().get_signal_list()\
 		.filter(func(m): return len(m.args) == 0)\
 		.map(func(m): return m.name)
+
+	inherited_method_list += Node.new().get_method_list()
+	inherited_method_list += Node2D.new().get_method_list()
+	inherited_method_list += CanvasItem.new().get_method_list()
 
 func _can_handle(object) -> bool:
 	return true
@@ -62,13 +67,14 @@ func _parse_category(object: Object, category: String) -> void:
 
 	var methods := object.get_method_list().filter(
 		func(m: Dictionary):
-			if m.flags & m.flags != METHOD_FLAG_NORMAL:
+			prints("A", m.flags)
+			if m in inherited_method_list:
 				return false
-			if m.name[0] in ["@", "set_"]:
+			if m.name[0] == "@":
 				return false
 			if not flags.get("private", false) and m.name[0] in "_":
 				return false
-			if not flags.get("getters", true) and m.name.begins_with("get_"):
+			if not flags.get("getters", false) and m.name.begins_with("get_"):
 				return false
 			if not flags.get("setters", false) and m.name.begins_with("set_"):
 				return false
