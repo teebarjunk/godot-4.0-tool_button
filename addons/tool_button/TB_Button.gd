@@ -295,7 +295,7 @@ func _call(x: Variant) -> Variant:
 
 func _edit(file: String):
 	pluginref.get_editor_interface().select_file(file)
-	pluginref.get_editor_interface().edit_resource.call_deferred(ResourceLoader.load(file, "TextFileAccess", 0))
+	pluginref.get_editor_interface().edit_resource.call_deferred(ResourceLoader.load(file, "TextFile", 0))
 
 func _on_button_pressed(index: int):
 	var got
@@ -317,18 +317,18 @@ static func get_error_name(error: int) -> String:
 		ERR_UNAUTHORIZED: return "Unauthorized"
 		ERR_PARAMETER_RANGE_ERROR: return "Parameter range"
 		ERR_OUT_OF_MEMORY: return "Out of memory (OOM)"
-		ERR_FILE_NOT_FOUND: return "FileAccess: Not found"
-		ERR_FILE_BAD_DRIVE: return "FileAccess: Bad drive"
-		ERR_FILE_BAD_PATH: return "FileAccess: Bad path"
-		ERR_FILE_NO_PERMISSION: return "FileAccess: No permission"
-		ERR_FILE_ALREADY_IN_USE: return "FileAccess: Already in use"
-		ERR_FILE_CANT_OPEN: return "FileAccess: Can't open"
-		ERR_FILE_CANT_WRITE: return "FileAccess: Can't write"
-		ERR_FILE_CANT_READ: return "FileAccess: Can't read"
-		ERR_FILE_UNRECOGNIZED: return "FileAccess: Unrecognized"
-		ERR_FILE_CORRUPT: return "FileAccess: Corrupt"
-		ERR_FILE_MISSING_DEPENDENCIES: return "FileAccess: Missing dependencies"
-		ERR_FILE_EOF: return "FileAccess: End of file (EOF)"
+		ERR_FILE_NOT_FOUND: return "File: Not found"
+		ERR_FILE_BAD_DRIVE: return "File: Bad drive"
+		ERR_FILE_BAD_PATH: return "File: Bad path"
+		ERR_FILE_NO_PERMISSION: return "File: No permission"
+		ERR_FILE_ALREADY_IN_USE: return "File: Already in use"
+		ERR_FILE_CANT_OPEN: return "File: Can't open"
+		ERR_FILE_CANT_WRITE: return "File: Can't write"
+		ERR_FILE_CANT_READ: return "File: Can't read"
+		ERR_FILE_UNRECOGNIZED: return "File: Unrecognized"
+		ERR_FILE_CORRUPT: return "File: Corrupt"
+		ERR_FILE_MISSING_DEPENDENCIES: return "File: Missing dependencies"
+		ERR_FILE_EOF: return "File: End of file (EOF)"
 		ERR_CANT_OPEN: return "Can't open"
 		ERR_CANT_CREATE: return "Can't create"
 		ERR_QUERY_FAILED: return "Query failed"
