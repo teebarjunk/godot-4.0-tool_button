@@ -39,9 +39,9 @@ func _init(obj: Object, d, p):
 		button.button_down.connect(self._on_button_pressed.bind(index))
 
 		if "hint" in info:
-			button.hint_tooltip = _get_key_or_call(info, "hint", TYPE_STRING, "")
+			button.tooltip_text = _get_key_or_call(info, "hint", TYPE_STRING, "")
 		else:
-			button.hint_tooltip = "%s(%s)" % [info.call, _get_args_string(info)]
+			button.tooltip_text = "%s(%s)" % [info.call, _get_args_string(info)]
 
 		button.flat = info.get("flat", false)
 		button.alignment = info.get("align", HORIZONTAL_ALIGNMENT_CENTER)
@@ -54,7 +54,7 @@ func _init(obj: Object, d, p):
 	if len(all_info) > 1:
 		check = CheckBox.new()
 		check.button_pressed = _get_tool_button_state().get(hash_id, false)
-		check.hint_tooltip = "All at once"
+		check.tooltip_text = "All at once"
 		check.pressed.connect(_check_pressed)
 		add_child(check)
 
@@ -102,7 +102,7 @@ func _get_info(d: Variant) -> Variant:
 	elif d is Array:
 		if d[0] is Signal:
 			var sig: Signal = d[0]
-			var args = " ".join(d[1].map(func(x): return var2str(x)))
+			var args = " ".join(d[1].map(func(x): return str(x)))
 			out.call=_do_signal.bind(d)
 			out.text="%s\n%s" % [str(sig.get_name()).capitalize(), args]
 			out.tint=TINT_SIGNAL
@@ -242,8 +242,8 @@ func _call(x: Variant) -> Variant:
 					pluginref.get_editor_interface().get_resource_filesystem().scan()
 
 				"CREATE_AND_EDIT":
-					var f := File.new()
-					f.open(p[1], File.WRITE)
+					var f := FileAccess.new()
+					f.open(p[1], FileAccess.WRITE)
 					f.store_string(p[2])
 					f.close()
 					var rf: EditorFileSystem = pluginref.get_editor_interface().get_resource_filesystem()
@@ -255,20 +255,20 @@ func _call(x: Variant) -> Variant:
 					pluginref.get_editor_interface().edit_resource.call_deferred(load(p[1]))
 
 				"SELECT_AND_EDIT":
-					if File.new().file_exists(p[1]):
+					if FileAccess.new().file_exists(p[1]):
 						pluginref.get_editor_interface().select_file(p[1])
 						pluginref.get_editor_interface().edit_resource.call_deferred(load(p[1]))
 					else:
 						push_error("Nothing to select and edit at %s." % p[1])
 
 				"SELECT_FILE":
-					if File.new().file_exists(p[1]):
+					if FileAccess.new().file_exists(p[1]):
 						pluginref.get_editor_interface().select_file(p[1])
 					else:
 						push_error("No file to select at %s." % p[1])
 
 				"EDIT_RESOURCE":
-					if File.new().file_exists(p[1]):
+					if FileAccess.new().file_exists(p[1]):
 						pluginref.get_editor_interface().edit_resource.call_deferred(load(p[1]))
 					else:
 						push_error("No resource to edit at %s." % p[1])
@@ -295,7 +295,7 @@ func _call(x: Variant) -> Variant:
 
 func _edit(file: String):
 	pluginref.get_editor_interface().select_file(file)
-	pluginref.get_editor_interface().edit_resource.call_deferred(ResourceLoader.load(file, "TextFile", 0))
+	pluginref.get_editor_interface().edit_resource.call_deferred(ResourceLoader.load(file, "TextFileAccess", 0))
 
 func _on_button_pressed(index: int):
 	var got
@@ -317,18 +317,18 @@ static func get_error_name(error: int) -> String:
 		ERR_UNAUTHORIZED: return "Unauthorized"
 		ERR_PARAMETER_RANGE_ERROR: return "Parameter range"
 		ERR_OUT_OF_MEMORY: return "Out of memory (OOM)"
-		ERR_FILE_NOT_FOUND: return "File: Not found"
-		ERR_FILE_BAD_DRIVE: return "File: Bad drive"
-		ERR_FILE_BAD_PATH: return "File: Bad path"
-		ERR_FILE_NO_PERMISSION: return "File: No permission"
-		ERR_FILE_ALREADY_IN_USE: return "File: Already in use"
-		ERR_FILE_CANT_OPEN: return "File: Can't open"
-		ERR_FILE_CANT_WRITE: return "File: Can't write"
-		ERR_FILE_CANT_READ: return "File: Can't read"
-		ERR_FILE_UNRECOGNIZED: return "File: Unrecognized"
-		ERR_FILE_CORRUPT: return "File: Corrupt"
-		ERR_FILE_MISSING_DEPENDENCIES: return "File: Missing dependencies"
-		ERR_FILE_EOF: return "File: End of file (EOF)"
+		ERR_FILE_NOT_FOUND: return "FileAccess: Not found"
+		ERR_FILE_BAD_DRIVE: return "FileAccess: Bad drive"
+		ERR_FILE_BAD_PATH: return "FileAccess: Bad path"
+		ERR_FILE_NO_PERMISSION: return "FileAccess: No permission"
+		ERR_FILE_ALREADY_IN_USE: return "FileAccess: Already in use"
+		ERR_FILE_CANT_OPEN: return "FileAccess: Can't open"
+		ERR_FILE_CANT_WRITE: return "FileAccess: Can't write"
+		ERR_FILE_CANT_READ: return "FileAccess: Can't read"
+		ERR_FILE_UNRECOGNIZED: return "FileAccess: Unrecognized"
+		ERR_FILE_CORRUPT: return "FileAccess: Corrupt"
+		ERR_FILE_MISSING_DEPENDENCIES: return "FileAccess: Missing dependencies"
+		ERR_FILE_EOF: return "FileAccess: End of file (EOF)"
 		ERR_CANT_OPEN: return "Can't open"
 		ERR_CANT_CREATE: return "Can't create"
 		ERR_QUERY_FAILED: return "Query failed"
