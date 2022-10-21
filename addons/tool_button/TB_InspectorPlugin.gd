@@ -28,7 +28,7 @@ func _init(p):
 
 	inherited_method_list += Node.new().get_method_list()
 	inherited_method_list += Node2D.new().get_method_list()
-	inherited_method_list += CanvasItem.new().get_method_list()
+	inherited_method_list += Control.new().get_method_list()
 
 func _can_handle(object) -> bool:
 	return true
