@@ -155,9 +155,7 @@ func _process_info(out: Dictionary):
 		if parts[i].begins_with("!"):
 			var tag: String = parts[i].substr(1)
 			var clr := Color()
-			var clr_index := clr.find_named_color(tag)
-			if clr_index != -1:
-				out.tint = clr.get_named_color(clr_index)
+			out.tint = clr.from_string(tag, Color.SLATE_GRAY)
 
 	return out
 
