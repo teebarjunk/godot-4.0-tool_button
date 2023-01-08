@@ -48,7 +48,10 @@ func _parse_begin(object: Object) -> void:
 
 var object_category_cache = []
 func _parse_category(object: Object, category: String) -> void:
-	var allowed_categories = ["Node", "Resource"]
+	if ProjectSettings.get_setting("show_default_buttons"):
+		var allowed_categories = ["Node", "Resource"]
+	else:
+		var allowed_categories = []
 #	var obj_script = object.get_script()
 #	if obj_script:
 #		var has_exports = "@export" in obj_script.source_code
