@@ -240,8 +240,7 @@ func _call(x: Variant) -> Variant:
 					pluginref.get_editor_interface().get_resource_filesystem().scan()
 
 				"CREATE_AND_EDIT":
-					var f := FileAccess.new()
-					f.open(p[1], FileAccess.WRITE)
+					var f = FileAccess.open(p[1], FileAccess.WRITE)
 					f.store_string(p[2])
 					f.close()
 					var rf: EditorFileSystem = pluginref.get_editor_interface().get_resource_filesystem()
@@ -253,20 +252,20 @@ func _call(x: Variant) -> Variant:
 					pluginref.get_editor_interface().edit_resource.call_deferred(load(p[1]))
 
 				"SELECT_AND_EDIT":
-					if FileAccess.new().file_exists(p[1]):
+					if FileAccess.file_exists(p[1]):
 						pluginref.get_editor_interface().select_file(p[1])
 						pluginref.get_editor_interface().edit_resource.call_deferred(load(p[1]))
 					else:
 						push_error("Nothing to select and edit at %s." % p[1])
 
 				"SELECT_FILE":
-					if FileAccess.new().file_exists(p[1]):
+					if FileAccess.file_exists(p[1]):
 						pluginref.get_editor_interface().select_file(p[1])
 					else:
 						push_error("No file to select at %s." % p[1])
 
 				"EDIT_RESOURCE":
-					if FileAccess.new().file_exists(p[1]):
+					if FileAccess.file_exists(p[1]):
 						pluginref.get_editor_interface().edit_resource.call_deferred(load(p[1]))
 					else:
 						push_error("No resource to edit at %s." % p[1])
