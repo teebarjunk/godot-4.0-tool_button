@@ -51,7 +51,7 @@ func _parse_category(object: Object, category: String) -> void:
 	var allowed_categories = []
 	if ProjectSettings.get_setting("show_default_buttons"):
 		allowed_categories = ["Node", "Resource"]
-	else:
+
 #	var obj_script = object.get_script()
 #	if obj_script:
 #		var has_exports = "@export" in obj_script.source_code
